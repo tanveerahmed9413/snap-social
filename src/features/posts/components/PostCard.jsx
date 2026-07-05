@@ -1,0 +1,92 @@
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  Bookmark,
+  MoreHorizontal,
+} from "lucide-react";
+import MediaPlayer from "../../../components/MediaPlayer";
+
+const PostCard = ({ post }) => {
+  return (
+    <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Header */}
+
+      <div className="flex items-center justify-between p-5">
+        <div className="flex items-center gap-3">
+          <img
+            src={
+              post?.profiles?.avatar_url ??
+              "https://img.icons8.com/?size=100&id=60023&format=png&color=000000"
+            }
+            alt={post?.profiles?.username}
+            className="w-12 h-12 rounded-full object-cover"
+          />
+
+          <div>
+            <h3 className="font-semibold text-gray-900">
+              {post?.profiles?.full_name}
+            </h3>
+
+            <p className="text-sm text-gray-500">@{post?.profiles?.username}</p>
+          </div>
+        </div>
+
+        <button>
+          <MoreHorizontal size={20} className="text-gray-500" />
+        </button>
+      </div>
+
+      {/* Caption */}
+
+      <div className="px-5 pb-4">
+        <p className="text-gray-700 leading-7">{post?.caption}</p>
+      </div>
+
+      {/* Image or Video */}
+
+      <div className="bg-black flex justify-center">
+        {post.media_type === "image" ? (
+          <img
+            src={post.media_url}
+            alt="Post"
+            className="block w-full max-w-[400px] max-h-[500px] object-contain"
+          />
+        ) : (
+          <MediaPlayer
+            src={post.media_url}
+            className="block w-full max-w-[400px] max-h-[500px] object-contain"
+          />
+        )}
+      </div>
+
+      {/* Footer */}
+
+      <div className="flex items-center justify-between px-5 py-4">
+        <div className="flex items-center gap-6">
+          <button className="flex items-center gap-2 text-gray-700 hover:text-red-500 transition">
+            <Heart size={22} />
+
+            <span>{44}</span>
+          </button>
+
+          <button className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition">
+            <MessageCircle size={22} />
+
+            <span>{22}</span>
+          </button>
+
+          <button className="hover:text-indigo-600 transition">
+            <Send size={22} />
+          </button>
+        </div>
+
+        <button className="hover:text-indigo-600 transition">
+          <Bookmark size={22} />
+        </button>
+      </div>
+    </article>
+  );
+};
+
+export default PostCard;
