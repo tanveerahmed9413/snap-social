@@ -78,6 +78,7 @@ const MediaPlayer = ({
         onClick={handlePlayPause}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        preload="metadata"
         className="w-full h-full object-contain cursor-pointer" // changed from object-cover
       />
 

@@ -10,6 +10,7 @@ const FeedPage = lazy(() => import("../features/posts/pages/FeedPage"));
 const RootRedirect = lazy(() => import("../shared/components/RootRedirect"));
 const NotFound = lazy(() => import("../shared/pages/NotFound"));
 const Profile = lazy(() => import("../features/profile/pages/Profile"));
+const EditProfile = lazy(()=> import("../features/profile/pages/EditProfile"))
 
 
 import PageLoader from "../shared/components/PageLoader";
@@ -32,6 +33,7 @@ const AppRoutes = () => {
               <Route path="message" element={<FeedPage />} />
               <Route path="saved" element={<FeedPage />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="profile/edit" element={<EditProfile />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

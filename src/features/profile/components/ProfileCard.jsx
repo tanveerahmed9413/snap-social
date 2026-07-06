@@ -1,22 +1,22 @@
 import {
   Grid3X3,
-  Bookmark,
   UserRoundPen,
   Link as LinkIcon,
   MoreHorizontal,
   Trash2,
 } from "lucide-react";
+
+import { Link } from "react-router-dom";
 import { useProfile } from "../hooks/useProfile";
 import { useEffect, useState } from "react";
 import MediaPlayer from "../../../components/MediaPlayer";
 import { usePost } from "../../posts/hooks/usePost";
-import { getCurrentUserPosts } from "../services/profile.api";
 
 const ProfileCard = () => {
   const { profile, handleGetProfile, handleGetPosts, loading, posts } =
     useProfile();
 
-  const { handleDeletePost,deleting } = usePost();
+  const { handleDeletePost, deleting } = usePost();
 
   const [openMenuId, setOpenMenuId] = useState(null);
 
@@ -64,12 +64,14 @@ const ProfileCard = () => {
         <div className="flex-1 w-full text-center md:text-left">
           <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-center md:justify-start gap-3 sm:gap-4">
             <h1 className="text-2xl sm:text-3xl font-bold">
-              {profile.username}
+              @{profile.username}
             </h1>
-            <button className="flex items-center gap-2 px-5 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm sm:text-base">
-              <UserRoundPen size={18} />
-              <span className="hidden sm:inline">Edit Profile</span>
-            </button>
+            <Link to="edit">
+              <button className="flex cursor-pointer items-center gap-2 px-5 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm sm:text-base">
+                <UserRoundPen size={18} />
+                <span className="hidden sm:inline">Edit Profile</span>
+              </button>
+            </Link>
           </div>
 
           <div className="flex justify-center md:justify-start gap-8 sm:gap-12 mt-4">
@@ -129,10 +131,6 @@ const ProfileCard = () => {
           <Grid3X3 size={18} />
           Posts
         </button>
-        {/* <button className="flex items-center gap-2 text-gray-500 hover:text-black transition text-sm sm:text-base">
-          <Bookmark size={18} />
-          Saved
-        </button> */}
       </div>
 
       {/* Posts Grid */}
@@ -175,8 +173,8 @@ const ProfileCard = () => {
                     disabled={loading}
                     onClick={async () => {
                       await handleDeletePost(post.id);
-                        await handleGetPosts()
-                        setOpenMenuId(null)
+                      await handleGetPosts();
+                      setOpenMenuId(null);
                     }}
                     className="flex cursor-pointer items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
                   >

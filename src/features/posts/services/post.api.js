@@ -73,6 +73,34 @@ export const deletePost = async (postId) => {
     throw new Error("User not logged in");
   }
 
+  const { data: post, error: fetchError } = await supabase
+    .from("posts")
+    .select("media_url")
+    .eq("id", postId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  if (post.media_url) {
+    
+
+    const filePath = post.media_url.split("/AllPosts/")[1];
+
+   
+
+    const { error: storageError } = await supabase.storage
+      .from("AllPosts")
+      .remove([filePath]);
+
+
+    if (storageError) {
+      throw new Error(storageError.message);
+    }
+  }
+
   const { data, error } = await supabase
     .from("posts")
     .delete()

@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useAuth } from "../features/auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-const tabs = ["For You", "Following"];
+
 
 const Navbar = ({ onCreateClick }) => {
-  const [activeTab, setActiveTab] = useState("For You");
+
 
   const { signout, loading } = useAuth();
   const navigate = useNavigate();
