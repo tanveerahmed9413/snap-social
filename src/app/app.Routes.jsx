@@ -1,34 +1,42 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import SignIn from "../features/auth/pages/SignIn";
-import SignUp from "../features/auth/pages/SignUp";
-import MainLayout from "../layouts/MainLayouts";
-import FeedPage from "../features/posts/pages/FeedPage";
+import { BrowserRouter, Routes, Route,} from "react-router-dom";
+import { lazy, Suspense } from "react";
+
 import ProtectedRoute from "../shared/components/ProtectedRoute";
-import RootRedirect from "../shared/components/RootRedirect";
-import NotFound from "../shared/pages/NotFound";
-import Profile from "../features/profile/pages/Profile";
+
+const SignIn = lazy(() => import("../features/auth/pages/SignIn"));
+const SignUp = lazy(() => import("../features/auth/pages/SignUp"));
+const MainLayout = lazy(() => import("../layouts/MainLayouts"));
+const FeedPage = lazy(() => import("../features/posts/pages/FeedPage"));
+const RootRedirect = lazy(() => import("../shared/components/RootRedirect"));
+const NotFound = lazy(() => import("../shared/pages/NotFound"));
+const Profile = lazy(() => import("../features/profile/pages/Profile"));
+
+
+import PageLoader from "../shared/components/PageLoader";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<RootRedirect  />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
 
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/app" element={<MainLayout />}>
-            <Route path="home" element={<FeedPage />} />
-            <Route path="explore" element={<FeedPage />} />
-            <Route path="notification" element={<FeedPage />} />
-            <Route path="message" element={<FeedPage />} />
-            <Route path="saved" element={<FeedPage />} />
-            <Route path="profile" element={<Profile />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/app" element={<MainLayout />}>
+              <Route path="home" element={<FeedPage />} />
+              <Route path="explore" element={<FeedPage />} />
+              <Route path="notification" element={<FeedPage />} />
+              <Route path="message" element={<FeedPage />} />
+              <Route path="saved" element={<FeedPage />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
           </Route>
-        </Route>
-      <Route  path="*" element={<NotFound />}/>
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };
