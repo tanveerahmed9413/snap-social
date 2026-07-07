@@ -1,5 +1,10 @@
 import { useContext, useState } from "react";
-import { createPost, deletePost, getAllPosts } from "../services/post.api";
+import {
+  createPost,
+  deletePost,
+  getAllPosts,
+  toggleLike,
+} from "../services/post.api";
 import { PostContext } from "../post.context";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,6 +13,7 @@ import {
   showLoading,
   showSuccess,
 } from "../../../utils/toast";
+import { AuthSessionMissingError } from "@supabase/supabase-js";
 
 export function usePost() {
   const navigate = useNavigate();
@@ -72,10 +78,24 @@ export function usePost() {
     }
   };
 
+  const handleToggleLike = async (postId) => {
+    try {
+      const liked = await toggleLike(postId);
+
+      const posts = await getAllPosts();
+
+      setPosts(posts);
+    } catch (error) {
+      showError(error?.message || "Something went wrong");
+    } finally {
+    }
+  };
+
   return {
     handleCreatePost,
     handleGetAllPost,
     handleDeletePost,
+    handleToggleLike,
     deleting,
     posts,
     setPosts,

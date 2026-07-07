@@ -6,8 +6,19 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import MediaPlayer from "../../../components/MediaPlayer";
+import { usePost } from "../hooks/usePost";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 const PostCard = ({ post }) => {
+  const { handleToggleLike } = usePost();
+ 
+  const { user } = useAuth();
+
+const isLiked =
+  post.likes?.some(
+    (like) => like.user_id === user?.id
+  ) || false;
+
   return (
     <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
       {/* Header */}
@@ -64,10 +75,14 @@ const PostCard = ({ post }) => {
 
       <div className="flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-6">
-          <button className="flex items-center gap-2 text-gray-700 hover:text-red-500 transition">
-            <Heart size={22} />
+          <button
+          onClick={()=> handleToggleLike(post.id)}
+           className="flex cursor-pointer items-center gap-2 text-gray-700 hover:text-red-500 transition">
+            <Heart
+             size={22}
+              className={isLiked ? "fill-red-500 text-red-500" : ""}/>
 
-            <span>{44}</span>
+            <span>{post.likes?.length || 0}</span>
           </button>
 
           <button className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition">

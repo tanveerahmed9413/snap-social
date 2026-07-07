@@ -33,6 +33,7 @@ export const createPost = async ({ media, caption }) => {
       media_type: mediaType,
       caption,
     })
+    .select()
     .single();
 
   if (error) {
@@ -52,6 +53,9 @@ export const getAllPosts = async () => {
         username,
         full_name,
         avatar_url
+      ),
+       likes(
+        user_id
       )
     `,
     )
@@ -85,16 +89,11 @@ export const deletePost = async (postId) => {
   }
 
   if (post.media_url) {
-    
-
     const filePath = post.media_url.split("/AllPosts/")[1];
-
-   
 
     const { error: storageError } = await supabase.storage
       .from("AllPosts")
       .remove([filePath]);
-
 
     if (storageError) {
       throw new Error(storageError.message);
@@ -112,4 +111,57 @@ export const deletePost = async (postId) => {
   }
 
   return data;
+};
+
+export const toggleLike = async (postId) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("User not logged in");
+  }
+
+  // Check existing like
+  const { data: existingLike, error } = await supabase
+    .from("likes")
+    .select("id")
+    .eq("post_id", postId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  // Unlike
+  if (existingLike) {
+    const { error } = await supabase
+      .from("likes")
+      .delete()
+      .eq("id", existingLike.id);
+
+    if (error) {
+      throw error;
+    }
+
+    return false;
+  }
+
+  // Like
+  const { error: insertError } = await supabase
+    .from("likes")
+    .insert({
+      post_id: postId,
+      user_id: user.id,
+    })
+    .select()
+    .single()
+    ;
+
+  if (insertError) {
+    throw insertError;
+  }
+
+  return true;
 };
