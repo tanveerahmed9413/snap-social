@@ -165,3 +165,25 @@ export const toggleLike = async (postId) => {
 
   return true;
 };
+
+export const  getPostById = async (postId) =>{
+  const {data,error} = await supabase
+  .from("posts") 
+  .select(`
+    *,
+    profiles(
+    id,
+    username,
+    avatar_url
+    ),
+    likes(count)
+    `)
+    .eq("id",postId)
+    .single()
+
+    if(error){
+      throw new Error(error.message)
+    }
+
+    return data
+}

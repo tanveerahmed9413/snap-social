@@ -8,11 +8,29 @@ import {
 import MediaPlayer from "../../../components/MediaPlayer";
 import { usePost } from "../hooks/usePost";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { showSuccess } from "../../../utils/toast";
 
 const PostCard = ({ post }) => {
   const { handleToggleLike } = usePost();
  
   const { user } = useAuth();
+
+
+    const handleShare = async () => {
+      const shareURL = `${window.location.origin}/post/${post.id}`;
+  
+      if (navigator.share) {
+        await navigator.share({
+          title: `${post.profiles.username}'s Post`,
+          text: post.caption,
+          url: shareURL,
+        });
+        showSuccess("Post shared successfully!");
+      } else {
+        await navigator.clipboard.writeText(shareURL);
+        showSuccess("Link copied!");
+      }
+    };
 
 const isLiked =
   post.likes?.some(
@@ -85,18 +103,19 @@ const isLiked =
             <span>{post.likes?.length || 0}</span>
           </button>
 
-          <button className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition">
+          <button className="flex cursor-pointer items-center gap-2 text-gray-700 hover:text-indigo-600 transition">
             <MessageCircle size={22} />
 
             <span>{22}</span>
           </button>
 
-          <button className="hover:text-indigo-600 transition">
+          <button onClick={handleShare}
+           className="hover:text-indigo-600 cursor-pointer transition">
             <Send size={22} />
           </button>
         </div>
 
-        <button className="hover:text-indigo-600 transition">
+        <button className="hover:text-indigo-600 cursor-pointer transition">
           <Bookmark size={22} />
         </button>
       </div>

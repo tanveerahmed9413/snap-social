@@ -11,6 +11,7 @@ const RootRedirect = lazy(() => import("../shared/components/RootRedirect"));
 const NotFound = lazy(() => import("../shared/pages/NotFound"));
 const Profile = lazy(() => import("../features/profile/pages/Profile"));
 const EditProfile = lazy(()=> import("../features/profile/pages/EditProfile"))
+const SinglePost = lazy(() => import("../features/posts/components/SinglePost"))
 
 
 import PageLoader from "../shared/components/PageLoader";
@@ -28,6 +29,7 @@ const AppRoutes = () => {
 
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="post/:postId" element={<SinglePost />}/>
 
           <Route element={<ProtectedRoute />}>
             <Route path="/app" element={<MainLayout />}>

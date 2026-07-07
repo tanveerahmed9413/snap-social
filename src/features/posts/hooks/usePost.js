@@ -3,6 +3,7 @@ import {
   createPost,
   deletePost,
   getAllPosts,
+  getPostById,
   toggleLike,
 } from "../services/post.api";
 import { PostContext } from "../post.context";
@@ -91,11 +92,25 @@ export function usePost() {
     }
   };
 
+  const handleSinglePost = async (postId) => {
+    try {
+      setLoading(true);
+      return await getPostById(postId);
+
+     
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     handleCreatePost,
     handleGetAllPost,
     handleDeletePost,
     handleToggleLike,
+    handleSinglePost,
     deleting,
     posts,
     setPosts,
