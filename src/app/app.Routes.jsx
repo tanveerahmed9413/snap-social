@@ -15,9 +15,13 @@ const EditProfile = lazy(()=> import("../features/profile/pages/EditProfile"))
 
 import PageLoader from "../shared/components/PageLoader";
 
+import { Toaster } from "react-hot-toast";
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
+
+    <Toaster position="top-center" reverseOrder={false} toastOptions={{duration: 3000}}/>
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<RootRedirect />} />

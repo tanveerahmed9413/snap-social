@@ -66,7 +66,6 @@ const EditProfileCard = () => {
         bio: formData.bio,
         avatar: imageFile,
       });
-      alert("Profile Updated");
       navigate("/app/profile");
     } catch (err) {
       throw err;

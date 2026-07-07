@@ -6,6 +6,7 @@ import {
   updateProfile,
 } from "../services/profile.api";
 import { AuthSessionMissingError } from "@supabase/supabase-js";
+import { dismissToast, showError, showLoading, showSuccess } from "../../../utils/toast";
 
 export function useProfile() {
   const { profile, setProfile, loading, setLoading, posts, setPosts } =
@@ -40,16 +41,19 @@ export function useProfile() {
   };
 
   const handleProfileUpdate = async (formData) => {
+    const id = showLoading("Profile Updating...");
     try {
       setLoading(true);
 
       const updateprofile = await updateProfile(formData);
       setProfile(updateprofile);
+      showSuccess("Profile Updated");
       return updateprofile;
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      showError(error?.message || "Something went wrong");
       throw err;
     } finally {
+      dismissToast(id);
       setLoading(false);
     }
   };

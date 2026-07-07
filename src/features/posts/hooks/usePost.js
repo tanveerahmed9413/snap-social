@@ -2,6 +2,12 @@ import { useContext, useState } from "react";
 import { createPost, deletePost, getAllPosts } from "../services/post.api";
 import { PostContext } from "../post.context";
 import { useNavigate } from "react-router-dom";
+import {
+  dismissToast,
+  showError,
+  showLoading,
+  showSuccess,
+} from "../../../utils/toast";
 
 export function usePost() {
   const navigate = useNavigate();
@@ -9,6 +15,7 @@ export function usePost() {
   const { posts, setPosts, loading, setLoading } = useContext(PostContext);
 
   const handleCreatePost = async ({ media, caption }) => {
+    const id = showLoading("Post Creating...");
     try {
       setLoading(true);
 
@@ -21,10 +28,13 @@ export function usePost() {
 
       setPosts(posts);
 
+      showSuccess("Post Created");
+
       navigate("/app/home");
     } catch (error) {
-      alert(error.message);
+      showError(error?.message || "Something went wrong");
     } finally {
+      dismissToast(id);
       setLoading(false);
     }
   };
@@ -44,16 +54,20 @@ export function usePost() {
   };
 
   const handleDeletePost = async (postId) => {
+    const id = showLoading("Post Deleting...");
     try {
       setDeleting(true);
       await deletePost(postId);
 
+      showSuccess("Post Deleted");
+
       setPosts((prev) => {
-        return prev.filter((post) => post.id != postId);
+        return prev.filter((post) => post.id !== postId);
       });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      showError(error?.message || "Something went wrong");
     } finally {
+      dismissToast(id);
       setDeleting(false);
     }
   };
