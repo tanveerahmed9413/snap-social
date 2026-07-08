@@ -1,6 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const useVideoVisibility = (containerRef, playerRef) => {
+  const wasVisible = useRef(false);
+
   useEffect(() => {
     const element = containerRef.current;
 
@@ -8,23 +10,25 @@ const useVideoVisibility = (containerRef, playerRef) => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log(entry.isIntersecting);
-
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !wasVisible.current) {
+          wasVisible.current = true;
           playerRef.current.play();
-        } else {
+        }
+
+        if (!entry.isIntersecting && wasVisible.current) {
+          wasVisible.current = false;
           playerRef.current.pause();
         }
       },
       {
-        threshold: 0.3,
+        threshold: 0.5,
       }
     );
 
     observer.observe(element);
 
-    return () => observer.unobserve(element);
-  }, [containerRef, playerRef]);
+    return () => observer.disconnect();
+  }, []);
 };
 
 export default useVideoVisibility;

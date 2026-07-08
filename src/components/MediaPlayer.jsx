@@ -55,11 +55,15 @@ const MediaPlayer = forwardRef(
     const [showControls, setShowControls] = useState(alwaysShowControls); // initial state based on prop
 
     // Play / Pause
-    const handlePlayPause = () => {
+    const handlePlayPause = (e) => {
+      e.stopPropagation();
+
       const video = videoRef.current;
+
       if (!video) return;
+
       if (video.paused) {
-        video.play();
+        video.play().catch(() => {});
       } else {
         video.pause();
       }
@@ -67,9 +71,6 @@ const MediaPlayer = forwardRef(
 
     // Mute / Unmute
     const handleMute = () => {
-      console.log("Button Clicked");
-      console.log("Current:", muted);
-
       onMuteToggle?.(!muted);
     };
 
@@ -94,36 +95,20 @@ const MediaPlayer = forwardRef(
     }, [alwaysShowControls]);
 
     useEffect(() => {
-      const video = videoRef.current;
-      if (!video) return;
-
-      video.loop = loop;
-
-      if (autoPlay) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
+      if (videoRef.current) {
+        videoRef.current.loop = loop;
       }
-    }, [autoPlay, loop]);
+    }, [loop]);
 
     useEffect(() => {
-      console.log("Video muted:", muted);
-
       if (videoRef.current) {
         videoRef.current.muted = muted;
       }
     }, [muted]);
 
-    const containerClasses = `
-    relative
-    w-full
+    const containerClasses = ` relative w-full
     ${fullWidth ? "max-w-none mx-0" : "max-w-[420px] mx-auto"}
-    rounded-2xl
-    overflow-hidden
-    bg-black
-    select-none
-    ${className}
-  `;
+    rounded-2xl overflow-hidden bg-black select-none ${className}`;
 
     return (
       <div
@@ -165,7 +150,7 @@ const MediaPlayer = forwardRef(
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  console.log("Mute Button Clicked");
+                  // handlePlayPause(e)
                   handleMute();
                 }}
                 className="h-10 w-10 rounded-full bg-black/50 backdrop-blur flex items-center justify-center text-white pointer-events-auto"

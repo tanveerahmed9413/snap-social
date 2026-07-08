@@ -14,7 +14,7 @@ import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
 
 const PostCard = ({ post }) => {
   const { handleToggleLike, isMuted, setIsMuted } = usePost();
-  console.log("isMuted:", isMuted);
+ 
 
   const containerRef = useRef(null);
   const playerRef = useRef(null);
@@ -101,7 +101,7 @@ const PostCard = ({ post }) => {
             ref={playerRef}
             src={post.media_url}
             className="block w-full max-w-[400px] max-h-[500px]"
-            autoPlay={false}
+            autoPlay
             loop
             defaultMuted
             showPlayBtn
