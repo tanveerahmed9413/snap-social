@@ -12,30 +12,35 @@ import { showSuccess } from "../../../utils/toast";
 
 const PostCard = ({ post }) => {
   const { handleToggleLike } = usePost();
- 
+
   const { user } = useAuth();
 
-
-    const handleShare = async () => {
+  const handleShare = async () => {
+    try {
       const shareURL = `${window.location.origin}/post/${post.id}`;
-  
+
       if (navigator.share) {
         await navigator.share({
           title: `${post.profiles.username}'s Post`,
           text: post.caption,
           url: shareURL,
         });
+        console.log(navigator.share);
+
         showSuccess("Post shared successfully!");
       } else {
         await navigator.clipboard.writeText(shareURL);
         showSuccess("Link copied!");
       }
-    };
 
-const isLiked =
-  post.likes?.some(
-    (like) => like.user_id === user?.id
-  ) || false;
+    } catch (error) {
+      console.log(error);
+      console.error("Share Error:", error);
+    }
+  };
+
+  const isLiked =
+    post.likes?.some((like) => like.user_id === user?.id) || false;
 
   return (
     <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
@@ -94,11 +99,13 @@ const isLiked =
       <div className="flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-6">
           <button
-          onClick={()=> handleToggleLike(post.id)}
-           className="flex cursor-pointer items-center gap-2 text-gray-700 hover:text-red-500 transition">
+            onClick={() => handleToggleLike(post.id)}
+            className="flex cursor-pointer items-center gap-2 text-gray-700 hover:text-red-500 transition"
+          >
             <Heart
-             size={22}
-              className={isLiked ? "fill-red-500 text-red-500" : ""}/>
+              size={22}
+              className={isLiked ? "fill-red-500 text-red-500" : ""}
+            />
 
             <span>{post.likes?.length || 0}</span>
           </button>
@@ -109,8 +116,10 @@ const isLiked =
             <span>{22}</span>
           </button>
 
-          <button onClick={handleShare}
-           className="hover:text-indigo-600 cursor-pointer transition">
+          <button
+            onClick={handleShare}
+            className="hover:text-indigo-600 cursor-pointer transition"
+          >
             <Send size={22} />
           </button>
         </div>

@@ -4,6 +4,7 @@ import {
   Link as LinkIcon,
   MoreHorizontal,
   Trash2,
+  LogOut,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
@@ -12,6 +13,10 @@ import { useEffect, useState } from "react";
 import MediaPlayer from "../../../components/MediaPlayer";
 import { usePost } from "../../posts/hooks/usePost";
 
+
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+
 const ProfileCard = () => {
   const { profile, handleGetProfile, handleGetPosts, loading, posts } =
     useProfile();
@@ -19,6 +24,17 @@ const ProfileCard = () => {
   const { handleDeletePost, deleting } = usePost();
 
   const [openMenuId, setOpenMenuId] = useState(null);
+
+
+// signoutFeature
+  const { signout, } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signout();
+    navigate("/signin");
+  };
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -66,12 +82,21 @@ const ProfileCard = () => {
             <h1 className="text-2xl sm:text-3xl font-bold">
               @{profile.username}
             </h1>
-            <Link to="edit">
-              <button className="flex cursor-pointer items-center gap-2 px-5 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm sm:text-base">
-                <UserRoundPen size={18} />
-                <span className="hidden sm:inline">Edit Profile</span>
+            <div className="flex  gap-2">
+              <Link to="edit">
+                <button className="flex  cursor-pointer items-center gap-2 px-5 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm sm:text-base">
+                  <UserRoundPen size={18} />
+                  <span className=" sm:inline">Edit Profile</span>
+                </button>
+              </Link>
+              <button
+              onClick={handleLogout}
+               className="flex sm:hidden cursor-pointer items-center gap-2 px-5 py-2 rounded-xl   bg-red-400 text-white hover:bg-red-800 transition text-sm sm:text-base">
+                
+                <LogOut size={18}/>
+                <span className=" ">Logout</span>
               </button>
-            </Link>
+            </div>
           </div>
 
           <div className="flex justify-center md:justify-start gap-8 sm:gap-12 mt-4">
@@ -134,11 +159,11 @@ const ProfileCard = () => {
       </div>
 
       {/* Posts Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 mb-10 ">
         {posts.map((post) => (
           <div
             key={post.id}
-            className="relative aspect-square overflow-hidden rounded-xl bg-black group"
+            className="relative lg:aspect-square overflow-hidden rounded-xl bg-black group"
           >
             {/* Media */}
             {post.media_type === "image" ? (
@@ -168,7 +193,7 @@ const ProfileCard = () => {
               </button>
 
               {openMenuId === post.id && (
-                <div className="absolute cursor-pointer right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-20">
+                <div className="absolute cursor-pointer right-0 mt-2 lg:w-40 sm:w-20 bg-white rounded-xl shadow-xl border border-gray-100 py-0 z-20">
                   <button
                     disabled={loading}
                     onClick={async () => {
@@ -176,7 +201,7 @@ const ProfileCard = () => {
                       await handleGetPosts();
                       setOpenMenuId(null);
                     }}
-                    className="flex cursor-pointer items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                    className="flex cursor-pointer items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition"
                   >
                     <Trash2 size={16} />
                     {deleting ? "Deleting" : "Delete"}

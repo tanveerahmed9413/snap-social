@@ -47,7 +47,7 @@ const Feed = () => {
 
   if (loading) {
     return (
-      <section className="max-w-[470px] mx-auto px-4 space-y-6 py-4">
+      <section className="max-w-[470px] mx-auto space-y-6 py-4">
         {[1, 2, 3].map((item) => (
           <SkeletonPost key={item} />
         ))}
@@ -56,7 +56,7 @@ const Feed = () => {
   }
 
   return (
-    <section className="max-w-[470px] mx-auto px-4 space-y-6 py-4">
+    <section className="max-w-[470px] mx-auto mb-20 lg:mb-8  space-y-6 py-4">
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}

@@ -73,7 +73,7 @@ const EditProfileCard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-5">
+    <div className="min-h-screen bg-gray-100 py-10 px-0">
       <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden">
         {/* Header */}
 
@@ -192,7 +192,7 @@ const EditProfileCard = () => {
                 value={formData.bio}
                 onChange={handleChange}
                 maxLength={160}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                className="w-full pl-12 pr-4 py-3 min-h-60 lg:min-h-40  rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
               />
 
               <p className="text-right text-sm text-gray-400 mt-2">
@@ -202,11 +202,10 @@ const EditProfileCard = () => {
           </div>
 
           {/* Footer */}
-
-          <div className="flex justify-end gap-4 border-t pt-8">
+          <div className="flex flex-col lg:flex-row justify-end gap-4 border-t pt-8">
             <Link
-              to="/profile"
-              className="px-6 py-3 rounded-xl border hover:bg-gray-100"
+              to="/app/profile"
+              className="w-full lg:w-auto px-6 py-3 rounded-xl border hover:bg-gray-100 text-center"
             >
               Cancel
             </Link>
@@ -214,7 +213,7 @@ const EditProfileCard = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-3 cursor-pointer rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
+              className="w-full lg:w-auto px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold cursor-pointer"
             >
               {loading ? "Updating Profile..." : "Save Changes"}
             </button>

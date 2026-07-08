@@ -1,4 +1,5 @@
 import { supabase } from "../../../app/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 export const createPost = async ({ media, caption }) => {
   const {
@@ -9,7 +10,7 @@ export const createPost = async ({ media, caption }) => {
     throw new Error("User not logged in");
   }
 
-  const fileName = `${crypto.randomUUID()}.${media.name.split(".").pop()}`;
+  const fileName = `${uuidv4()}.${media.name.split(".").pop()}`;
 
   const { error: uploadError } = await supabase.storage
     .from("AllPosts")
