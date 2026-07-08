@@ -17,6 +17,7 @@ const SinglePost = lazy(() => import("../features/posts/components/SinglePost"))
 import PageLoader from "../shared/components/PageLoader";
 
 import { Toaster } from "react-hot-toast";
+import ReelsPage from "../features/reels/pages/ReelsPage";
 
 const AppRoutes = () => {
   return (
@@ -37,7 +38,7 @@ const AppRoutes = () => {
               <Route path="explore" element={<FeedPage />} />
               <Route path="notification" element={<FeedPage />} />
               <Route path="message" element={<FeedPage />} />
-              <Route path="saved" element={<FeedPage />} />
+              <Route path="reels" element={<ReelsPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="profile/edit" element={<EditProfile />} />
             </Route>

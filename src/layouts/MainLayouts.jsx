@@ -1,6 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import CreatePostModal from "../features/posts/components/CreatePostModel";
 import { useState } from "react";
 import MobileNavbar from "../components/MobileNavbar";
@@ -10,6 +10,9 @@ const MainLayout = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const online = useStatus();
+
+  const location = useLocation();
+  const isReelsPage = location.pathname === "/app/reels";
 
   return (
     <>
@@ -26,11 +29,15 @@ const MainLayout = () => {
 
         {/* Main Content */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Navbar */}
-          <Topbar onCreateClick={() => setIsCreateOpen(true)} />
+          {!isReelsPage && (
+            <Topbar onCreateClick={() => setIsCreateOpen(true)} />
+          )}
 
-          {/* Feed */}
-          <main className="flex-1 overflow-y-auto p-6">
+          <main
+            className={`flex-1 overflow-y-auto ${
+              isReelsPage ? "p-0 bg-black" : "p-6"
+            }`}
+          >
             <Outlet />
           </main>
         </div>

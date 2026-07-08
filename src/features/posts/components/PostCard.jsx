@@ -9,9 +9,17 @@ import MediaPlayer from "../../../components/MediaPlayer";
 import { usePost } from "../hooks/usePost";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { showSuccess } from "../../../utils/toast";
+import { useRef } from "react";
+import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
 
 const PostCard = ({ post }) => {
-  const { handleToggleLike } = usePost();
+  const { handleToggleLike, isMuted, setIsMuted } = usePost();
+  console.log("isMuted:", isMuted);
+
+  const containerRef = useRef(null);
+  const playerRef = useRef(null);
+
+  useVideoVisibility(containerRef, playerRef);
 
   const { user } = useAuth();
 
@@ -32,7 +40,6 @@ const PostCard = ({ post }) => {
         await navigator.clipboard.writeText(shareURL);
         showSuccess("Link copied!");
       }
-
     } catch (error) {
       console.log(error);
       console.error("Share Error:", error);
@@ -43,7 +50,10 @@ const PostCard = ({ post }) => {
     post.likes?.some((like) => like.user_id === user?.id) || false;
 
   return (
-    <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <article
+      ref={containerRef}
+      className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
+    >
       {/* Header */}
 
       <div className="flex items-center justify-between p-5">
@@ -88,8 +98,16 @@ const PostCard = ({ post }) => {
           />
         ) : (
           <MediaPlayer
+            ref={playerRef}
             src={post.media_url}
-            className="block w-full max-w-[400px] max-h-[500px] object-contain"
+            className="block w-full max-w-[400px] max-h-[500px]"
+            autoPlay={false}
+            loop
+            defaultMuted
+            showPlayBtn
+            showMuteBtn
+            muted={isMuted}
+            onMuteToggle={setIsMuted}
           />
         )}
       </div>

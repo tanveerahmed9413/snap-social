@@ -7,6 +7,7 @@ import AppRoutes from "./app/app.Routes";
 import { AuthProvider } from "./features/auth/auth.context";
 import { PostProvider } from "./features/posts/post.context";
 import { ProfileProvider } from "./features/profile/profile.context";
+import { ReelsProvider } from "./features/reels/reel.context";
 
 function App() {
   return (
@@ -14,7 +15,9 @@ function App() {
       <AuthProvider>
         <PostProvider>
           <ProfileProvider>
-            <AppRoutes />
+            <ReelsProvider>
+              <AppRoutes />
+            </ReelsProvider>
           </ProfileProvider>
         </PostProvider>
       </AuthProvider>

@@ -3,7 +3,7 @@ import {
   Compass,
   Bell,
   MessageCircle,
-  Bookmark,
+  Video,
   User,
   SquarePen,
 } from "lucide-react";
@@ -32,9 +32,9 @@ const menuItems = [
     path: "message",
   },
   {
-    title: "Saved",
-    icon: Bookmark,
-    path: "saved",
+    title: "Reels",
+    icon: Video,
+    path: "reels",
   },
   {
     title: "Profile",

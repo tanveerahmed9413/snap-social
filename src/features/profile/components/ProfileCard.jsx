@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import MediaPlayer from "../../../components/MediaPlayer";
 import { usePost } from "../../posts/hooks/usePost";
 
-
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -25,16 +24,14 @@ const ProfileCard = () => {
 
   const [openMenuId, setOpenMenuId] = useState(null);
 
-
-// signoutFeature
-  const { signout, } = useAuth();
+  // signoutFeature
+  const { signout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await signout();
     navigate("/signin");
   };
-
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -90,10 +87,10 @@ const ProfileCard = () => {
                 </button>
               </Link>
               <button
-              onClick={handleLogout}
-               className="flex sm:hidden cursor-pointer items-center gap-2 px-5 py-2 rounded-xl   bg-red-400 text-white hover:bg-red-800 transition text-sm sm:text-base">
-                
-                <LogOut size={18}/>
+                onClick={handleLogout}
+                className="flex sm:hidden cursor-pointer items-center gap-2 px-5 py-2 rounded-xl   bg-red-400 text-white hover:bg-red-800 transition text-sm sm:text-base"
+              >
+                <LogOut size={18} />
                 <span className=" ">Logout</span>
               </button>
             </div>
@@ -175,9 +172,9 @@ const ProfileCard = () => {
             ) : (
               <MediaPlayer
                 src={post.media_url}
-                fullWidth
-                alwaysShowControls
-                className="w-full h-full rounded-xl"
+                showPlayBnt
+                showMuteBtn
+                className="w-full h-full rounded-xl cursor-pointer"
               />
             )}
 

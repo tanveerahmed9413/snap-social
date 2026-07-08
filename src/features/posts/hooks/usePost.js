@@ -19,7 +19,7 @@ import { AuthSessionMissingError } from "@supabase/supabase-js";
 export function usePost() {
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
-  const { posts, setPosts, loading, setLoading } = useContext(PostContext);
+  const { posts, setPosts, loading, setLoading,isMuted,setIsMuted } = useContext(PostContext);
 
   const handleCreatePost = async ({ media, caption }) => {
     const id = showLoading("Post Creating...");
@@ -115,5 +115,7 @@ export function usePost() {
     posts,
     setPosts,
     loading,
+    isMuted,
+    setIsMuted
   };
 }
