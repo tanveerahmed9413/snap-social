@@ -36,11 +36,11 @@ const MediaPlayer = forwardRef(
       },
 
       mute() {
-        onMuteToggle?.(true);
+        setIsMuted(true);
       },
 
       unMute() {
-        onMuteToggle?.(false);
+        setIsMuted(false);
       },
 
       getVideo() {

@@ -10,9 +10,11 @@ import { useState, useRef } from "react";
 import MediaPlayer from "../../../components/MediaPlayer";
 import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
 import { usePost } from "../../posts/hooks/usePost";
+import { useReels } from "../hooks/useReels";
 
 const ReelCard = ({ reel }) => {
-  const { handleToggleLike, loading, isMuted,setIsMuted } = usePost();
+  const { handleToggleLike, loading,} = usePost();
+  const {reelsMuted,setReelsMuted} = useReels()
   const containerRef = useRef(null);
   const playerRef = useRef(null);
 
@@ -28,11 +30,11 @@ const ReelCard = ({ reel }) => {
         ref={playerRef}
         src={reel.media_url}
         autoPlay
-        defaultMuted
+        // defaultMuted={false}
         showPlayBtn
         showMuteBtn
-        muted={isMuted}
-        onMuteToggle={setIsMuted}
+        muted={reelsMuted}
+        onMuteToggle={setReelsMuted}
         className="absolute inset-0 w-full h-full object-cover"
       />
 

@@ -13,7 +13,8 @@ import { useRef } from "react";
 import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
 
 const PostCard = ({ post }) => {
-  const { handleToggleLike, isMuted, setIsMuted } = usePost();
+  const { handleToggleLike,isMuted, setIsMuted } = usePost();
+
  
 
   const containerRef = useRef(null);
@@ -103,7 +104,7 @@ const PostCard = ({ post }) => {
             className="block w-full max-w-[400px] max-h-[500px]"
             autoPlay
             loop
-            defaultMuted
+            defaultMuted={true}
             showPlayBtn
             showMuteBtn
             muted={isMuted}

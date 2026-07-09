@@ -21,7 +21,7 @@ const useVideoVisibility = (containerRef, playerRef) => {
         }
       },
       {
-        threshold: 0.5,
+        threshold: 0.7,
       }
     );
 
