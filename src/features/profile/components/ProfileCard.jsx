@@ -15,10 +15,30 @@ import { usePost } from "../../posts/hooks/usePost";
 
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useFollow } from "../../follows/hooks/useFollow";
 
 const ProfileCard = () => {
   const { profile, handleGetProfile, handleGetPosts, loading, posts } =
     useProfile();
+
+  const { getCounts } = useFollow();
+
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
+
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    const loadCounts = async () => {
+      const data = await getCounts(profile.id);
+
+      setFollowers(data.followers);
+      setFollowing(data.following);
+    };
+
+    loadCounts();
+  }, [profile?.id]);
+
 
   const { handleDeletePost, deleting } = usePost();
 
@@ -59,8 +79,6 @@ const ProfileCard = () => {
   }
 
   const postCount = posts?.length || 0;
-  const followerCount = profile.followers_count ?? 12800;
-  const followingCount = profile.following_count ?? 0;
 
   return (
     <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -102,16 +120,15 @@ const ProfileCard = () => {
               <p className="text-gray-500 text-sm sm:text-base">Posts</p>
             </div>
             <div>
-              <h2 className="font-bold text-xl sm:text-2xl">
-                {followerCount.toLocaleString()}
-              </h2>
-              <p className="text-gray-500 text-sm sm:text-base">Followers</p>
+              <h2 className="font-bold text-xl sm:text-2xl">{followers}</h2>
+
+              <p className="text-gray-500">Followers</p>
             </div>
+
             <div>
-              <h2 className="font-bold text-xl sm:text-2xl">
-                {followingCount.toLocaleString()}
-              </h2>
-              <p className="text-gray-500 text-sm sm:text-base">Following</p>
+              <h2 className="font-bold text-xl sm:text-2xl">{following}</h2>
+
+              <p className="text-gray-500">Following</p>
             </div>
           </div>
 

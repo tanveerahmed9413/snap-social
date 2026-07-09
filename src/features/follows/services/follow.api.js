@@ -1,6 +1,5 @@
-
 import { supabase } from "../../../app/supabase";
-
+import { showError } from "../../../utils/toast";
 
 export const followUser = async (userId) => {
   const {
@@ -23,6 +22,10 @@ export const unFollowUser = async (userId) => {
   } = await supabase.auth.getUser();
 
   if (!user) throw new Error("User Not Authorize");
+
+  if (user.id === userId) {
+    throw new Error("You can't follow yourself"); 
+  }
 
   const { error } = await supabase
     .from("follows")
@@ -52,4 +55,26 @@ export const isFollowing = async (userId) => {
   }
 
   return !!data;
+};
+
+export const getFollowersCount = async (userId) => {
+  const { count, error } = await supabase
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("following_id", userId);
+
+  if (error) throw error;
+
+  return count;
+};
+
+export const getFollowingCount = async (userId) => {
+  const { count, error } = await supabase
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("follower_id", userId);
+
+  if (error) throw error;
+
+  return count;
 };

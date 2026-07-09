@@ -8,9 +8,11 @@ import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
 import { useFollow } from "../../follows/hooks/useFollow";
 
 const PostCard = ({ post }) => {
+  const { user } = useAuth();
   const { handleToggleLike, isMuted, setIsMuted } = usePost();
   const { handleToggleFollow, followingMap, checkFollowing } = useFollow();
 
+  const isOwnProfile = user?.id === post.profiles.id;
   const isFollowing = followingMap[post.profiles.id] || false;
 
   useEffect(() => {
@@ -21,12 +23,11 @@ const PostCard = ({ post }) => {
     }
   }, [post?.profiles?.id]);
 
+
   const containerRef = useRef(null);
   const playerRef = useRef(null);
 
   useVideoVisibility(containerRef, playerRef);
-
-  const { user } = useAuth();
 
   const handleShare = async () => {
     try {
@@ -81,17 +82,19 @@ const PostCard = ({ post }) => {
           </div>
         </div>
 
-        <button
-          onClick={() => handleToggleFollow(post.profiles.id)}
-          className={`px-5 py-2  active:scale-95 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer
-    ${
-      isFollowing
-        ? "bg-gray-100 text-gray-800 hover:bg-red-50 hover:text-red-600 border border-gray-200"
-        : "bg-blue-500 text-white hover:bg-blue-600"
-    }`}
-        >
-          {isFollowing ? "Following" : "Follow"}
-        </button>
+        {!isOwnProfile && (
+          <button
+            onClick={() => handleToggleFollow(post.profiles.id)}
+            className={`px-5 py-2 active:scale-95 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer
+      ${
+        isFollowing
+          ? "bg-gray-100 text-gray-800 hover:bg-red-50 hover:text-red-600 border border-gray-200"
+          : "bg-blue-500 text-white hover:bg-blue-600"
+      }`}
+          >
+            {isFollowing ? "Following" : "Follow"}
+          </button>
+        )}
       </div>
 
       {/* Caption */}
