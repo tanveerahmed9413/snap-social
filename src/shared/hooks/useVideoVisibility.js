@@ -1,33 +1,28 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import VideoVisibilityManager from "../managers/VideoVisibilityManager";
 
 const useVideoVisibility = (containerRef, playerRef) => {
-  const wasVisible = useRef(false);
-
   useEffect(() => {
-    const element = containerRef.current;
-
-    if (!element || !playerRef.current) return;
+    if (!containerRef.current || !playerRef.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !wasVisible.current) {
-          wasVisible.current = true;
-          playerRef.current.play();
-        }
-
-        if (!entry.isIntersecting && wasVisible.current) {
-          wasVisible.current = false;
-          playerRef.current.pause();
+        if (entry.intersectionRatio >= 0.7) {
+          VideoVisibilityManager.play(playerRef.current);
+        } else {
+          VideoVisibilityManager.pause(playerRef.current);
         }
       },
       {
-        threshold: 0.7,
+        threshold: [0, 0.3, 0.5, 0.7, 1],
       }
     );
 
-    observer.observe(element);
+    observer.observe(containerRef.current);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 };
 

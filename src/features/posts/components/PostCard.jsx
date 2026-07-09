@@ -90,7 +90,7 @@ const PostCard = ({ post }) => {
 
       {/* Image or Video */}
 
-      <div className="bg-black flex justify-center">
+      <div className="bg-black flex justify-center min-h-[500px]">
         {post.media_type === "image" ? (
           <img
             src={post.media_url}
