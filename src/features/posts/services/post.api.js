@@ -51,6 +51,7 @@ export const getAllPosts = async () => {
       `
       *,
       profiles(
+      id,
         username,
         full_name,
         avatar_url
@@ -157,9 +158,7 @@ export const toggleLike = async (postId) => {
       user_id: user.id,
     })
     .select()
-    .single()
-    ;
-
+    .single();
   if (insertError) {
     throw insertError;
   }
@@ -167,10 +166,11 @@ export const toggleLike = async (postId) => {
   return true;
 };
 
-export const  getPostById = async (postId) =>{
-  const {data,error} = await supabase
-  .from("posts") 
-  .select(`
+export const getPostById = async (postId) => {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(
+      `
     *,
     profiles(
     id,
@@ -178,13 +178,14 @@ export const  getPostById = async (postId) =>{
     avatar_url
     ),
     likes(count)
-    `)
-    .eq("id",postId)
-    .single()
+    `,
+    )
+    .eq("id", postId)
+    .single();
 
-    if(error){
-      throw new Error(error.message)
-    }
+  if (error) {
+    throw new Error(error.message);
+  }
 
-    return data
-}
+  return data;
+};

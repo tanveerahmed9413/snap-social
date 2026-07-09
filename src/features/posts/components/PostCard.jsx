@@ -1,21 +1,25 @@
-import {
-  Heart,
-  MessageCircle,
-  Send,
-  Bookmark,
-  MoreHorizontal,
-} from "lucide-react";
+import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import MediaPlayer from "../../../components/MediaPlayer";
 import { usePost } from "../hooks/usePost";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { showSuccess } from "../../../utils/toast";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
+import { useFollow } from "../../follows/hooks/useFollow";
 
 const PostCard = ({ post }) => {
-  const { handleToggleLike,isMuted, setIsMuted } = usePost();
+  const { handleToggleLike, isMuted, setIsMuted } = usePost();
+  const { handleToggleFollow, followingMap, checkFollowing } = useFollow();
 
- 
+  const isFollowing = followingMap[post.profiles.id] || false;
+
+  useEffect(() => {
+    if (!post?.profiles?.id) return;
+
+    if (followingMap[post.profiles.id] === undefined) {
+      checkFollowing(post.profiles.id);
+    }
+  }, [post?.profiles?.id]);
 
   const containerRef = useRef(null);
   const playerRef = useRef(null);
@@ -77,8 +81,16 @@ const PostCard = ({ post }) => {
           </div>
         </div>
 
-        <button>
-          <MoreHorizontal size={20} className="text-gray-500" />
+        <button
+          onClick={() => handleToggleFollow(post.profiles.id)}
+          className={`px-5 py-2  active:scale-95 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer
+    ${
+      isFollowing
+        ? "bg-gray-100 text-gray-800 hover:bg-red-50 hover:text-red-600 border border-gray-200"
+        : "bg-blue-500 text-white hover:bg-blue-600"
+    }`}
+        >
+          {isFollowing ? "Following" : "Follow"}
         </button>
       </div>
 

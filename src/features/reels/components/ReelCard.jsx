@@ -6,17 +6,30 @@ import {
   MoreHorizontal,
   Volume2,
 } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MediaPlayer from "../../../components/MediaPlayer";
 import useVideoVisibility from "../../../shared/hooks/useVideoVisibility";
 import { usePost } from "../../posts/hooks/usePost";
 import { useReels } from "../hooks/useReels";
+import { useFollow } from "../../follows/hooks/useFollow";
 
 const ReelCard = ({ reel }) => {
-  const { handleToggleLike, loading,} = usePost();
-  const {reelsMuted,setReelsMuted} = useReels()
+  const { handleToggleLike, loading } = usePost();
+  const { reelsMuted, setReelsMuted } = useReels();
   const containerRef = useRef(null);
   const playerRef = useRef(null);
+
+  const { handleToggleFollow, followingMap, checkFollowing } = useFollow();
+
+  const isFollowing = followingMap[reel.profiles.id] || false;
+
+  useEffect(() => {
+    if (!reel?.profiles?.id) return;
+
+    if (followingMap[reel.profiles.id] === undefined) {
+      checkFollowing(reel.profiles.id);
+    }
+  }, [reel?.profiles?.id]);
 
   useVideoVisibility(containerRef, playerRef);
 
@@ -42,20 +55,28 @@ const ReelCard = ({ reel }) => {
       <div className="absolute pointer-events-none inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/60 z-10" />
 
       {/* Top User */}
-      <div className="absolute bottom-20 left-4 right-4 z-20 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img
-            src={reel.profiles.avatar_url}
-            alt={"user photo"}
-            className="w-10 h-10 rounded-full object-cover border border-white"
-          />
-          <span className="text-white font-semibold text-sm">
-            @{reel.profiles.username}
-          </span>
-        </div>
+      <div className="absolute bottom-20 left-4 z-20 flex items-center gap-3">
+        <img
+          src={reel.profiles.avatar_url}
+          alt="user photo"
+          className="w-10 h-10 rounded-full object-cover border border-white"
+        />
 
-        <button>
-          <MoreHorizontal className="w-6 h-6 text-white" />
+        <span className="text-white font-semibold text-sm">
+          @{reel.profiles.username}
+        </span>
+
+        <button
+          disabled={loading}
+          onClick={() => handleToggleFollow(reel.profiles.id)}
+          className={`h-8 px-4 rounded-lg text-sm font-semibold transition-all duration-200 active:scale-95
+      ${
+        isFollowing
+          ? "bg-white/90 text-gray-900 hover:bg-red-50 hover:text-red-600"
+          : "bg-blue-500 text-white hover:bg-blue-600"
+      }`}
+        >
+          {loading ? "..." : isFollowing ? "Following" : "Follow"}
         </button>
       </div>
 
@@ -74,10 +95,8 @@ const ReelCard = ({ reel }) => {
 
       {/* Actions */}
       <div className="absolute right-4 bottom-30 z-20 flex flex-col items-center gap-5 text-white">
-        <button className="flex flex-col items-center" >
-          <Heart
-            className={`w-7 h-7 transition `}
-          />
+        <button className="flex flex-col items-center">
+          <Heart className={`w-7 h-7 transition `} />
           <span className="text-xs mt-1">{0}</span>
         </button>
 
