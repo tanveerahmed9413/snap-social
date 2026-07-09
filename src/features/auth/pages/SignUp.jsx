@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const { signup } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
     username: "",
@@ -30,8 +31,18 @@ function SignUp() {
     }
   };
 
+  const handleEyeButton = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
-    <SignUpForm form={form} onChange={handleChange} onSubmit={handleSubmit} />
+    <SignUpForm
+      form={form}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      handleEyeButton={handleEyeButton}
+      showPassword={showPassword}
+    />
   );
 }
 

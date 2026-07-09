@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 
 const SignIn = () => {
   const { signin } = useAuth();
+  const [showPassword, setShowPassword] = useState(false)
 
   const [form, setform] = useState({
     email: "",
@@ -29,11 +30,17 @@ const SignIn = () => {
     }
   };
 
+  const handleEyeButton = () =>{
+    setShowPassword((prev) => !prev)
+  }
+
   return (
     <SignInForm
       form={form}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
+      handleEyeButton={handleEyeButton}
+      showPassword={showPassword}
     />
   );
 };

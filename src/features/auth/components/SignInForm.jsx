@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Mail, Lock, Eye, HandCoins } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff,HandCoins } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
-const SignInForm = ({ form, handleSubmit, handleChange }) => {
+const SignInForm = ({ form, handleSubmit, handleChange,handleEyeButton,showPassword }) => {
 
   const { loading } = useAuth();
 
@@ -37,7 +37,7 @@ const SignInForm = ({ form, handleSubmit, handleChange }) => {
               />
 
               <input
-                type="email"
+              type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
@@ -55,12 +55,12 @@ const SignInForm = ({ form, handleSubmit, handleChange }) => {
                 Password
               </label>
 
-              <button
+              {/* <button
                 type="button"
                 className="text-sm font-medium text-violet-600 hover:text-violet-700"
               >
                 Forgot Password?
-              </button>
+              </button> */}
             </div>
 
             <div className="relative">
@@ -70,7 +70,7 @@ const SignInForm = ({ form, handleSubmit, handleChange }) => {
               />
 
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
@@ -80,9 +80,10 @@ const SignInForm = ({ form, handleSubmit, handleChange }) => {
 
               <button
                 type="button"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-violet-600 transition"
+                onClick={handleEyeButton}
+                className="absolute  cursor-pointer right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-violet-600 transition"
               >
-                <Eye size={20} />
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />} 
               </button>
             </div>
           </div>

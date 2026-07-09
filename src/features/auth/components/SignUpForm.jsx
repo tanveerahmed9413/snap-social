@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, AtSign, Mail, Lock, Camera } from "lucide-react";
+import { User, AtSign, Mail, Lock, Camera,Eye,EyeOff } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
-const SignUpForm = ({ form, onChange, onSubmit }) => {
+const SignUpForm = ({ form, onChange, onSubmit,handleEyeButton,showPassword }) => {
   const { loading } = useAuth();
 
   return (
@@ -96,14 +96,23 @@ const SignUpForm = ({ form, onChange, onSubmit }) => {
             <div className="mt-2 flex items-center border rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-violet-500">
               <Lock size={20} className="text-gray-400 mr-3" />
 
-              <input
-                type="password"
+             <div className="flex gap-5 w-full">
+               <input
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={onChange}
                 placeholder="••••••••"
                 className="w-full outline-none bg-transparent"
               />
+              <button
+                type="button"
+                onClick={handleEyeButton}
+                className="  cursor-pointer right-4   -translate-y-1/12 text-gray-400 hover:text-violet-600 transition"
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />} 
+              </button>
+             </div>
             </div>
           </div>
 
