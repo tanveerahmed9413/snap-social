@@ -8,6 +8,7 @@ import {
 } from "../services/post.api";
 import { PostContext } from "../post.context";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/hooks/useAuth";
 import {
   dismissToast,
   showError,
@@ -19,21 +20,40 @@ import { AuthSessionMissingError } from "@supabase/supabase-js";
 export function usePost() {
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
-  const { posts, setPosts, loading, setLoading,isMuted,setIsMuted } = useContext(PostContext);
+
+  const {user } = useAuth()
+
+  const {
+    posts,
+    setPosts,
+
+    loading,
+    setLoading,
+
+    isMuted,
+    setIsMuted,
+
+    loadingMore,
+    setLoadingMore,
+
+    cursor,
+    setCursor,
+
+    hasMore,
+    setHasMore,
+    F,
+  } = useContext(PostContext);
 
   const handleCreatePost = async ({ media, caption }) => {
     const id = showLoading("Post Creating...");
-    try {
-      setLoading(true);
 
+    try {
       await createPost({
         media,
         caption,
       });
 
-      const posts = await getAllPosts();
-
-      setPosts(posts);
+      await handleGetPosts();
 
       showSuccess("Post Created");
 
@@ -42,21 +62,52 @@ export function usePost() {
       showError(error?.message || "Something went wrong");
     } finally {
       dismissToast(id);
-      setLoading(false);
     }
   };
 
-  const handleGetAllPost = async () => {
+  const handleGetPosts = async () => {
     try {
       setLoading(true);
 
-      const posts = await getAllPosts();
+      const result = await getAllPosts({
+        limit: 10,
+        cursor: null,
+      });
 
-      setPosts(posts);
+      setPosts(result.posts);
+
+      setCursor(result.nextCursor);
+
+      setHasMore(result.hasMore);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLoadMorePosts = async () => {
+    if (loadingMore || !hasMore || !cursor) {
+      return;
+    }
+
+    try {
+      setLoadingMore(true);
+
+      const result = await getAllPosts({
+        limit: 10,
+        cursor,
+      });
+
+      setPosts((prev) => [...prev, ...result.posts]);
+
+      setCursor(result.nextCursor);
+
+      setHasMore(result.hasMore);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -83,12 +134,29 @@ export function usePost() {
     try {
       const liked = await toggleLike(postId);
 
-      const posts = await getAllPosts();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post.id !== postId) {
+            return post;
+          }
 
-      setPosts(posts);
+          const currentLikes = post.likes || [];
+
+          if (liked) {
+            return {
+              ...post,
+              likes: [...currentLikes, { user_id: user.id }],
+            };
+          }
+
+          return {
+            ...post,
+            likes: currentLikes.filter((like) => like.user_id !== user.id),
+          };
+        }),
+      );
     } catch (error) {
       showError(error?.message || "Something went wrong");
-    } finally {
     }
   };
 
@@ -96,8 +164,6 @@ export function usePost() {
     try {
       setLoading(true);
       return await getPostById(postId);
-
-     
     } catch (error) {
       console.log(error);
     } finally {
@@ -107,15 +173,25 @@ export function usePost() {
 
   return {
     handleCreatePost,
-    handleGetAllPost,
+
+    handleGetPosts,
+    handleLoadMorePosts,
+
     handleDeletePost,
     handleToggleLike,
     handleSinglePost,
+
     deleting,
+
     posts,
     setPosts,
+
     loading,
+    loadingMore,
+
+    hasMore,
+
     isMuted,
-    setIsMuted
+    setIsMuted,
   };
 }

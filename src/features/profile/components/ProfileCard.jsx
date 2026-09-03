@@ -142,7 +142,7 @@ const ProfileCard = () => {
               </p>
             )}
             {profile.email && (
-              <p className="text-gray-600 break-all">{profile.email}</p>
+              <h2 className="text-blue-600 text-xl break-all">{profile.email}</h2>
             )}
             {profile.website && (
               <div className="flex items-center justify-center md:justify-start gap-2 text-blue-600 font-medium">

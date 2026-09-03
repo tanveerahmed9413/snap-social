@@ -1,24 +1,47 @@
-import { supabase } from "../../../app/supabase"
+import { supabase } from "../../../app/supabase";
 
-
-export const getAllReels = async()=>{
-    const {data,error} = await supabase
-    .from('posts')
+export const getReels = async ({
+  limit = 5,
+  cursor = null,
+} = {}) => {
+  let query = supabase
+    .from("posts")
     .select(`
-        *,
-        profiles(
+      *,
+      profiles(
         id,
         username,
         avatar_url
-        )
-        `)
-        .eq('media_type',"video")
-        .order('created_at',{ascending: false})
+      )
+    `)
+    .eq("media_type", "video")
+    .order("created_at", { ascending: false })
+    .limit(limit + 1);
 
-        if(error){
-            throw new Error(error.message)
-        }
+  if (cursor) {
+    query = query.lt("created_at", cursor);
+  }
 
-        return data
-    
-}
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const hasMore = data.length > limit;
+
+  const reels = hasMore
+    ? data.slice(0, limit)
+    : data;
+
+  const nextCursor =
+    reels.length > 0
+      ? reels[reels.length - 1].created_at
+      : null;
+
+  return {
+    reels,
+    nextCursor,
+    hasMore,
+  };
+};

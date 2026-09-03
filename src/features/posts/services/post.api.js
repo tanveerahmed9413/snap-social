@@ -44,30 +44,49 @@ export const createPost = async ({ media, caption }) => {
   return post;
 };
 
-export const getAllPosts = async () => {
-  const { data, error } = await supabase
+export const getAllPosts = async ({ limit = 10, cursor = null } = {}) => {
+  let query = supabase
     .from("posts")
     .select(
       `
       *,
       profiles(
-      id,
+        id,
         username,
         full_name,
         avatar_url
       ),
-       likes(
+      likes(
         user_id
       )
     `,
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(limit + 1);
+
+  // Next page ke liye
+  if (cursor) {
+    query = query.lt("created_at", cursor);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return data;
+  const hasMore = data.length > limit;
+
+  const posts = hasMore ? data.slice(0, limit) : data;
+
+  const nextCursor =
+    posts.length > 0 ? posts[posts.length - 1].created_at : null;
+
+  return {
+    posts,
+    nextCursor,
+    hasMore,
+  };
 };
 
 export const deletePost = async (postId) => {

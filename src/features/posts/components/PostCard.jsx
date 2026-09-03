@@ -105,28 +105,30 @@ const PostCard = ({ post }) => {
 
       {/* Image or Video */}
 
-      <div className="bg-black flex justify-center min-h-[500px]">
-        {post.media_type === "image" ? (
-          <img
-            src={post.media_url}
-            alt="Post"
-            className="block w-full max-w-[400px] max-h-[500px] object-contain"
-          />
-        ) : (
-          <MediaPlayer
-            ref={playerRef}
-            src={post.media_url}
-            className="block w-full max-w-[400px] max-h-[500px]"
-            autoPlay
-            loop
-            defaultMuted={true}
-            showPlayBtn
-            showMuteBtn
-            muted={isMuted}
-            onMuteToggle={setIsMuted}
-          />
-        )}
-      </div>
+      <div className="bg-black flex justify-center min-h-[350px] lg:min-h-[400px]">
+  {post.media_type === "image" ? (
+    <img
+      src={post.media_url}
+      alt="Post"
+      loading="lazy"
+      decoding="async"
+      className="block w-full max-w-[400px] lg:max-w-[340px] max-h-[350px] lg:max-h-[400px] object-contain"
+    />
+  ) : (
+    <MediaPlayer
+      ref={playerRef}
+      src={post.media_url}
+      className="block w-full max-w-[400px] lg:max-w-[340px] max-h-[350px] lg:max-h-[400px]"
+      autoPlay
+      loop
+      defaultMuted={true}
+      showPlayBtn
+      showMuteBtn
+      muted={isMuted}
+      onMuteToggle={setIsMuted}
+    />
+  )}
+</div>
 
       {/* Footer */}
 

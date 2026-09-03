@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import VideoVisibilityManager from "../managers/VideoVisibilityManager";
+import VideoVisibilityManager from "../managers/videoVisibilityManager";
 
 const useVideoVisibility = (containerRef, playerRef) => {
   useEffect(() => {

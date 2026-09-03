@@ -18,6 +18,9 @@ import PageLoader from "../shared/components/PageLoader";
 
 import { Toaster } from "react-hot-toast";
 import ReelsPage from "../features/reels/pages/ReelsPage";
+import ExplorePage from "../features/explore/pages/ExplorePage";
+import NotificationsPage from "../features/notification/pages/Notification";
+import MessagesPage from "../features/messages/pages/MessagePage";
 
 const AppRoutes = () => {
   return (
@@ -35,9 +38,9 @@ const AppRoutes = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/app" element={<MainLayout />}>
               <Route path="home" element={<FeedPage />} />
-              <Route path="explore" element={<FeedPage />} />
-              <Route path="notification" element={<FeedPage />} />
-              <Route path="message" element={<FeedPage />} />
+              <Route path="explore" element={<ExplorePage />} />
+              <Route path="notification" element={<NotificationsPage />} />
+              <Route path="message" element={<MessagesPage />} />
               <Route path="reels" element={<ReelsPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="profile/edit" element={<EditProfile />} />
