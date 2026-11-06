@@ -1,12 +1,4 @@
-import {
-  House,
-  Compass,
-  Bell,
-  MessageCircle,
-  Video,
-  User,
-  SquarePen,
-} from "lucide-react";
+import { House, Compass, SaveIcon, Video, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const menuItems = [
@@ -22,15 +14,11 @@ const menuItems = [
     path: "explore",
   },
   {
-    title: "Notifications",
-    icon: Bell,
-    path: "notification",
+    title: "Saved",
+    icon: SaveIcon,
+    path: "saved",
   },
-  {
-    title: "Messages",
-    icon: MessageCircle,
-    path: "message",
-  },
+
   {
     title: "Reels",
     icon: Video,
@@ -49,7 +37,7 @@ const Sidebar = () => {
       {/* Logo */}
       <div>
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-indigo-600">Lumina</h1>
+          <h1 className="text-4xl font-bold text-indigo-600">Lumina-Snap</h1>
 
           <p className="text-xs tracking-[4px] text-gray-400 mt-1">
             PREMIUM NETWORK

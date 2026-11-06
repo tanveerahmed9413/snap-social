@@ -1,41 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Camera, User, AtSign, FileText, Globe } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, Camera, User, AtSign, FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useProfile } from "../hooks/useProfile";
 
-const EditProfileCard = () => {
+const FALLBACK_AVATAR = "https://i.pravatar.cc/300";
+
+// Form: profile mil chuki hoti hai tab hi mount hota hai,
+// isliye initial values seedhe useState me daal sakte hain (effect ki zaroorat nahi)
+const EditProfileForm = ({ profile }) => {
   const fileInputRef = useRef(null);
-
-  const { handleProfileUpdate, loading, profile, handleGetProfile } =
-    useProfile();
-
-  useEffect(() => {
-    if (!profile) {
-      handleGetProfile();
-    }
-  }, []);
-
   const navigate = useNavigate();
+
+  const { handleProfileUpdate, saving } = useProfile();
 
   const [imageFile, setImageFile] = useState(null);
 
   const [formData, setFormData] = useState({
-    username: "",
-    fullName: "",
-    bio: "",
-    profilePic: "",
+    username: profile.username || "",
+    fullName: profile.full_name || "",
+    bio: profile.bio || "",
+    profilePic: profile.avatar_url || "",
   });
 
+  // Naya chuna hua photo ka temporary preview URL memory se hatana
   useEffect(() => {
-    if (!profile) return;
-
-    setFormData({
-      username: profile.username || "",
-      fullName: profile.full_name || "",
-      bio: profile.bio || "",
-      profilePic: profile.avatar_url || "",
-    });
-  }, [profile]);
+    return () => {
+      if (formData.profilePic.startsWith("blob:")) {
+        URL.revokeObjectURL(formData.profilePic);
+      }
+    };
+  }, [formData.profilePic]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -45,8 +39,7 @@ const EditProfileCard = () => {
   };
 
   const handleImage = (e) => {
-    const file = e.target.files[0];
-
+    const file = e.target.files?.[0];
     if (!file) return;
 
     setImageFile(file);
@@ -59,21 +52,21 @@ const EditProfileCard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      await handleProfileUpdate({
-        username: formData.username,
-        full_name: formData.fullName,
-        bio: formData.bio,
-        avatar: imageFile,
-      });
-      navigate("/app/profile");
-    } catch (err) {
-      throw err;
-    }
+    if (saving) return;
+
+    const success = await handleProfileUpdate({
+      username: formData.username.trim(),
+      full_name: formData.fullName.trim(),
+      bio: formData.bio,
+      avatar: imageFile,
+    });
+
+    // Fail hone par form khula rehta hai, user ka likha hua nahi jata
+    if (success) navigate("/app/profile");
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-0">
+    <div className="bg-gray-100 py-4 sm:py-10">
       <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden">
         {/* Header */}
 
@@ -98,14 +91,14 @@ const EditProfileCard = () => {
           <div className="flex flex-col items-center">
             <div className="relative">
               <img
-                src={formData.profilePic}
+                src={formData.profilePic || FALLBACK_AVATAR}
                 alt="profile"
                 className="w-36 h-36 rounded-full object-cover border-4 border-indigo-100"
               />
 
               <button
                 type="button"
-                onClick={() => fileInputRef.current.click()}
+                onClick={() => fileInputRef.current?.click()}
                 className="absolute cursor-pointer bottom-1 right-1 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full"
               >
                 <Camera size={18} />
@@ -122,7 +115,7 @@ const EditProfileCard = () => {
 
             <button
               type="button"
-              onClick={() => fileInputRef.current.click()}
+              onClick={() => fileInputRef.current?.click()}
               className="mt-5 cursor-pointer text-indigo-600 font-semibold hover:underline"
             >
               Change Profile Photo
@@ -212,16 +205,46 @@ const EditProfileCard = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={saving}
               className="w-full lg:w-auto px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold cursor-pointer"
             >
-              {loading ? "Updating Profile..." : "Save Changes"}
+              {saving ? "Updating Profile..." : "Save Changes"}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
+};
+
+
+// Page: pehle profile ensure karo, phir form dikhao
+const EditProfileCard = () => {
+  const { profile, status, loadProfile } = useProfile();
+
+  useEffect(() => {
+    loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!profile) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        {status === "error" ? (
+          <button
+            onClick={() => loadProfile({ force: true })}
+            className="cursor-pointer rounded-lg bg-black px-5 py-2 text-white"
+          >
+            Retry
+          </button>
+        ) : (
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-black" />
+        )}
+      </div>
+    );
+  }
+
+  return <EditProfileForm profile={profile} />;
 };
 
 export default EditProfileCard;

@@ -23,7 +23,7 @@ const MainLayout = () => {
         </div>
       )}
 
-      <div className={`${!online ? "pt-10" : ""} flex h-screen bg-gray-100`}>
+      <div className={`${!online ? "pt-10" : ""} flex h-dvh bg-gray-100`}>
         {/* Sidebar */}
         <Sidebar />
 
@@ -34,7 +34,7 @@ const MainLayout = () => {
           )}
 
           <main
-            className={`flex-1 overflow-y-auto ${
+            className={`flex-1 overflow-y-auto overscroll-y-contain ${
               isReelsPage ? "p-0 bg-black" : "p-6"
             }`}
           >

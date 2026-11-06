@@ -3,27 +3,32 @@ import VideoVisibilityManager from "../managers/videoVisibilityManager";
 
 const useVideoVisibility = (containerRef, playerRef) => {
   useEffect(() => {
-    if (!containerRef.current || !playerRef.current) return;
+    const container = containerRef.current;
+    const player = playerRef.current;
+
+    if (!container || !player) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.intersectionRatio >= 0.7) {
-          VideoVisibilityManager.play(playerRef.current);
+          VideoVisibilityManager.play(player);
         } else {
-          VideoVisibilityManager.pause(playerRef.current);
+          VideoVisibilityManager.pause(player);
         }
       },
       {
         threshold: [0, 0.3, 0.5, 0.7, 1],
-      }
+      },
     );
 
-    observer.observe(containerRef.current);
+    observer.observe(container);
 
     return () => {
       observer.disconnect();
+      // Card unmount (refresh / navigation) ho to video band + manager se hata do
+      VideoVisibilityManager.pause(player);
     };
-  }, []);
+  }, [containerRef, playerRef]);
 };
 
 export default useVideoVisibility;

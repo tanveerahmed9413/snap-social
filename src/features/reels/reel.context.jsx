@@ -1,40 +1,45 @@
-import { createContext, useState } from "react";
+import { createContext, useRef, useState } from "react";
 
 export const ReelsContext = createContext();
 
 export function ReelsProvider({ children }) {
   const [reels, setReels] = useState([]);
 
-  const [loading, setLoading] = useState(false);
-
+  // status: "idle" (kabhi load nahi hua) | "loading" | "ready" | "error"
+  const [status, setStatus] = useState("idle");
+  const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  const [cursor, setCursor] = useState(null);
-
   const [hasMore, setHasMore] = useState(true);
 
-  const [reelsMuted, setReelsMuted] = useState(false);
+  // Browser sound ke saath autoplay block karta hai (isi se black screen aati thi),
+  // isliye reels muted shuru hoti hain. User unmute kare to baaki reels unmuted chalti hain.
+  const [muted, setMuted] = useState(true);
+
+  // Refs: re-render nahi karte
+  const queueRef = useRef([]); // abhi tak na dikhaye gaye reel ids (shuffled)
+  const requestIdRef = useRef(0); // purane (stale) response ignore karne ke liye
+  const loadingMoreRef = useRef(false);
+  const pendingLikesRef = useRef(new Set());
 
   return (
     <ReelsContext.Provider
       value={{
         reels,
         setReels,
-
-        loading,
-        setLoading,
-
+        status,
+        setStatus,
+        refreshing,
+        setRefreshing,
         loadingMore,
         setLoadingMore,
-
-        cursor,
-        setCursor,
-
         hasMore,
         setHasMore,
-
-        reelsMuted,
-        setReelsMuted,
+        muted,
+        setMuted,
+        queueRef,
+        requestIdRef,
+        loadingMoreRef,
+        pendingLikesRef,
       }}
     >
       {children}

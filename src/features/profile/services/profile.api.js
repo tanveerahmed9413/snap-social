@@ -1,5 +1,8 @@
-import { data } from "react-router-dom";
 import { supabase } from "../../../app/supabase";
+import {
+  getFollowersCount,
+  getFollowingCount,
+} from "../../follows/services/follow.api";
 
 export const getCurrentUserProfile = async () => {
   // current user nikalna
@@ -54,6 +57,24 @@ export const getCurrentUserPosts = async () => {
   return data;
 };
 
+// Profile page ko jo kuch chahiye, sab ek saath (parallel) laata hai
+export const getProfilePageData = async () => {
+  const profile = await getCurrentUserProfile();
+
+  const [posts, followers, following] = await Promise.all([
+    getCurrentUserPosts(),
+    getFollowersCount(profile.id),
+    getFollowingCount(profile.id),
+  ]);
+
+  return {
+    profile,
+    posts,
+    followers: followers ?? 0,
+    following: following ?? 0,
+  };
+};
+
 export const updateProfile = async ({
   username,
   full_name,
@@ -87,7 +108,8 @@ export const updateProfile = async ({
 
   // Upload New Avatar
   if (avatar) {
-    uploadedFileName = `${user.id}-${Date.now()}-${avatar.name}`;
+    const extension = avatar.name.split(".").pop();
+    uploadedFileName = `${user.id}-${Date.now()}.${extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("Avatars")

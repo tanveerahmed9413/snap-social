@@ -32,35 +32,38 @@ export const createPost = async ({ media, caption }) => {
       user_id: user.id,
       media_url: data.publicUrl,
       media_type: mediaType,
-      caption,
+      caption: caption?.trim() || "",
     })
     .select()
     .single();
 
   if (error) {
+    // DB insert fail hua to upload ki hui file orphan reh jaati hai, usse hata do
+    await supabase.storage.from("AllPosts").remove([fileName]);
     throw new Error(error.message);
   }
 
   return post;
 };
 
+const POST_SELECT = `
+  *,
+  profiles(
+    id,
+    username,
+    full_name,
+    avatar_url
+  ),
+  likes(
+    user_id
+  )
+`;
+
+// Latest feed: newest first, cursor based pagination
 export const getAllPosts = async ({ limit = 10, cursor = null } = {}) => {
   let query = supabase
     .from("posts")
-    .select(
-      `
-      *,
-      profiles(
-        id,
-        username,
-        full_name,
-        avatar_url
-      ),
-      likes(
-        user_id
-      )
-    `,
-    )
+    .select(POST_SELECT)
     .order("created_at", { ascending: false })
     .limit(limit + 1);
 
@@ -87,6 +90,62 @@ export const getAllPosts = async ({ limit = 10, cursor = null } = {}) => {
     nextCursor,
     hasMore,
   };
+};
+
+// Random feed step 1: recent posts ke sirf id + created_at (light query)
+export const getFeedPostIds = async ({ max = 500 } = {}) => {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("id, created_at")
+    .order("created_at", { ascending: false })
+    .limit(max);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data || [];
+};
+
+// Random feed step 2: given ids ke full posts, same order me
+export const getPostsByIds = async (ids = []) => {
+  if (ids.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_SELECT)
+    .in("id", ids);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const byId = new Map((data || []).map((post) => [post.id, post]));
+
+  // Deleted posts skip ho jayenge, baaki ka order maintain
+  return ids.map((id) => byId.get(id)).filter(Boolean);
+};
+
+// "N new posts" banner ke liye
+export const getNewPostsCount = async ({ since, excludeUserId } = {}) => {
+  if (!since) return 0;
+
+  let query = supabase
+    .from("posts")
+    .select("id", { count: "exact", head: true })
+    .gt("created_at", since);
+
+  if (excludeUserId) {
+    query = query.neq("user_id", excludeUserId);
+  }
+
+  const { count, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return count || 0;
 };
 
 export const deletePost = async (postId) => {

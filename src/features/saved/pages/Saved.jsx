@@ -1,15 +1,15 @@
-import { MessageCircle } from "lucide-react";
+import { SaveIcon } from "lucide-react";
 
-const MessagesPage = () => {
+const Saved = () => {
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
       <div className="text-center">
         <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-violet-100 text-violet-600">
-          <MessageCircle size={40} />
+          <SaveIcon size={40} />
         </div>
 
         <h1 className="text-2xl font-bold text-gray-900">
-          Messages
+          Saved
         </h1>
 
         <p className="mt-2 text-gray-500">
@@ -17,11 +17,11 @@ const MessagesPage = () => {
         </p>
 
         <p className="mt-1 text-sm text-gray-400">
-          Messaging feature is coming soon.
+          Saved feature is coming soon.
         </p>
       </div>
     </div>
   );
 };
 
-export default MessagesPage;
+export default Saved;

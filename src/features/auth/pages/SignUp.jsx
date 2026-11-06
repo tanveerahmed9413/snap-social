@@ -1,7 +1,6 @@
 import { useState } from "react";
 import SignUpForm from "../components/SignUpForm";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const { signup } = useAuth();

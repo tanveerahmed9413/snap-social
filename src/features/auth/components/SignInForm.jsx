@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff,HandCoins } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
 const SignInForm = ({ form, handleSubmit, handleChange,handleEyeButton,showPassword }) => {

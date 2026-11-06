@@ -1,71 +1,112 @@
 import { useContext } from "react";
 import { ProfileContext } from "../profile.context";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { getProfilePageData, updateProfile } from "../services/profile.api";
 import {
-  getCurrentUserProfile,
-  getCurrentUserPosts,
-  updateProfile,
-} from "../services/profile.api";
-import { AuthSessionMissingError } from "@supabase/supabase-js";
-import { dismissToast, showError, showLoading, showSuccess } from "../../../utils/toast";
+  dismissToast,
+  showError,
+  showLoading,
+  showSuccess,
+} from "../../../utils/toast";
+
+// Itne seconds ke andar dobara profile kholo to network call nahi hoti
+const FRESH_FOR_MS = 30_000;
 
 export function useProfile() {
-  const { profile, setProfile, loading, setLoading, posts, setPosts } =
-    useContext(ProfileContext);
+  const { user } = useAuth();
 
-  const handleGetProfile = async () => {
+  const {
+    data,
+    setStored,
+    status,
+    setStatus,
+    saving,
+    setSaving,
+    inFlightRef,
+    loadedAtRef,
+  } = useContext(ProfileContext);
+
+  /**
+   * Profile + posts + followers/following ek saath load karta hai.
+   *
+   * - Pehli baar: full-page spinner dikhta hai.
+   * - Uske baad: purana data turant dikhta hai, naya data background me aata hai
+   *   (spinner nahi, flicker nahi).
+   * - force: true => cache ignore karke dobara load.
+   */
+  const loadProfile = async ({ force = false } = {}) => {
+    if (!user?.id || inFlightRef.current) return;
+
+    const hasCache = !!data.profile;
+    const isFresh = Date.now() - loadedAtRef.current < FRESH_FOR_MS;
+
+    if (hasCache && isFresh && !force) return;
+
     try {
-      setLoading(true);
-      const profile = await getCurrentUserProfile();
+      inFlightRef.current = true;
 
-      setProfile(profile);
+      if (!hasCache) setStatus("loading");
 
-      return profile;
-    } catch (err) {
-      console.error(err);
+      const result = await getProfilePageData();
+
+      setStored({ ownerId: user.id, ...result });
+      loadedAtRef.current = Date.now();
+      setStatus("ready");
+    } catch (error) {
+      console.error(error);
+
+      // Cache hai to chup-chaap purana data dikhate rahenge
+      if (!hasCache) setStatus("error");
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGetPosts = async () => {
-    try {
-      setLoading(true);
-      const posts = await getCurrentUserPosts();
-      setPosts(posts);
-      return posts;
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      inFlightRef.current = false;
     }
   };
 
   const handleProfileUpdate = async (formData) => {
-    const id = showLoading("Profile Updating...");
-    try {
-      setLoading(true);
+    const toastId = showLoading("Profile Updating...");
 
-      const updateprofile = await updateProfile(formData);
-      setProfile(updateprofile);
+    try {
+      setSaving(true);
+
+      const updatedProfile = await updateProfile(formData);
+
+      // email profiles table me nahi hota, isliye purana wala saath rakhte hain
+      setStored((prev) => ({
+        ...prev,
+        ownerId: user.id,
+        profile: { ...prev.profile, ...updatedProfile },
+      }));
+
       showSuccess("Profile Updated");
-      return updateprofile;
+      return true;
     } catch (error) {
       showError(error?.message || "Something went wrong");
-      throw err;
+      return false;
     } finally {
-      dismissToast(id);
-      setLoading(false);
+      dismissToast(toastId);
+      setSaving(false);
     }
   };
 
+  // Post delete hone ke baad dobara fetch nahi karte, bas list se hata dete hain
+  const removePostFromProfile = (postId) => {
+    setStored((prev) => ({
+      ...prev,
+      posts: prev.posts.filter((post) => post.id !== postId),
+    }));
+  };
+
   return {
-    profile,
-    handleGetProfile,
-    handleGetPosts,
+    profile: data.profile,
+    posts: data.posts,
+    followers: data.followers,
+    following: data.following,
+
+    status,
+    saving,
+
+    loadProfile,
     handleProfileUpdate,
-    setProfile,
-    loading,
-    posts,
-    setPosts,
+    removePostFromProfile,
   };
 }

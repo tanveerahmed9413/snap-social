@@ -1,47 +1,17 @@
 import { supabase } from "../../../app/supabase";
 
-export const getReels = async ({
-  limit = 5,
-  cursor = null,
-} = {}) => {
-  let query = supabase
+// Saari video posts (reels) ke sirf ids. Full data baad me getPostsByIds se aata hai.
+export const getReelIds = async ({ max = 300 } = {}) => {
+  const { data, error } = await supabase
     .from("posts")
-    .select(`
-      *,
-      profiles(
-        id,
-        username,
-        avatar_url
-      )
-    `)
+    .select("id")
     .eq("media_type", "video")
     .order("created_at", { ascending: false })
-    .limit(limit + 1);
-
-  if (cursor) {
-    query = query.lt("created_at", cursor);
-  }
-
-  const { data, error } = await query;
+    .limit(max);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  const hasMore = data.length > limit;
-
-  const reels = hasMore
-    ? data.slice(0, limit)
-    : data;
-
-  const nextCursor =
-    reels.length > 0
-      ? reels[reels.length - 1].created_at
-      : null;
-
-  return {
-    reels,
-    nextCursor,
-    hasMore,
-  };
+  return (data || []).map((row) => row.id);
 };

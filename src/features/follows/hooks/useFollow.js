@@ -1,6 +1,6 @@
-import { use, useContext } from "react";
+import { useContext } from "react";
 import { FollowContext } from "../follow.context";
-import { followUser, isFollowing, unFollowUser,getFollowersCount,getFollowingCount } from "../services/follow.api";
+import { followUser, isFollowing, unFollowUser, getFollowersCount, getFollowingCount, getFollowingStatuses } from "../services/follow.api";
 
 export function useFollow() {
   const {
@@ -12,6 +12,8 @@ export function useFollow() {
 } = useContext(FollowContext);
 
   const handleToggleFollow = async (userId) => {
+    if (loading) return;
+
     try {
       setLoading(true);
       const following = followingMap[userId];
@@ -50,6 +52,15 @@ export function useFollow() {
     }
   };
 
+  const checkFollowingMany = async (userIds) => {
+    try {
+      const statuses = await getFollowingStatuses(userIds);
+      setFollowingMap((prev) => ({ ...statuses, ...prev }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getCounts = async (userId) => {
   try {
     const followers = await getFollowersCount(userId);
@@ -70,6 +81,7 @@ export function useFollow() {
     followingMap,
     handleToggleFollow,
     checkFollowing,
+    checkFollowingMany,
     getCounts,
   };
 }

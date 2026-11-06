@@ -1,5 +1,4 @@
 import { supabase } from "../../../app/supabase";
-import { showError } from "../../../utils/toast";
 
 export const followUser = async (userId) => {
   const {
@@ -51,10 +50,33 @@ export const isFollowing = async (userId) => {
     .maybeSingle();
 
   if (error) {
-    throw new Error(error);
+    throw new Error(error.message);
   }
 
   return !!data;
+};
+
+// Ek hi query me bahut saare users ka follow status (N+1 queries se bachne ke liye)
+export const getFollowingStatuses = async (userIds = []) => {
+  if (userIds.length === 0) return {};
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return {};
+
+  const { data, error } = await supabase
+    .from("follows")
+    .select("following_id")
+    .eq("follower_id", user.id)
+    .in("following_id", userIds);
+
+  if (error) throw new Error(error.message);
+
+  const followed = new Set((data || []).map((row) => row.following_id));
+
+  return Object.fromEntries(userIds.map((id) => [id, followed.has(id)]));
 };
 
 export const getFollowersCount = async (userId) => {

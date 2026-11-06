@@ -1,12 +1,12 @@
-import { House, Compass, Bell, Video, User } from "lucide-react";
+import { House, Compass, SaveIcon, Video, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const menuItems = [
   { icon: House, label: "Home", path: "home" },
   { icon: Compass, label: "Explore", path: "explore" },
-  { icon: Bell, label: "Notifications", path: "notification" },
+  { icon: SaveIcon, label: "Saved", path: "saved" },
   { icon: Video, label: "Reels", path: "reels" },
-  { icon: User, label: "Profile", path: "profile" },
+  { icon: User, label: "Profile", path: "profile" },  
 ];
 
 const MobileNavbar = () => {
